@@ -1,0 +1,62 @@
+{
+  "name": "parameter-manager-synchronizer",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.499.0",
+    "@kubernetes/client-node": "^0.20.0",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.6.8",
+    "bootstrap": "^5.3.2",
+    "cors": "^2.8.5",
+    "cron-parser": "^4.9.0",
+    "crypto-js": "^4.2.0",
+    "date-fns": "^3.6.0",
+    "dotenv": "^16.3.2",
+    "font-awesome": "^4.7.0",
+    "formik": "^2.4.5",
+    "multiselect-react-dropdown": "^2.0.25",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.9.2",
+    "react-bootstrap-icons": "^1.11.4",
+    "react-data-table-component": "^7.6.2",
+    "react-datepicker": "^6.6.0",
+    "react-dom": "^18.2.0",
+    "react-multi-select-component": "^4.3.4",
+    "react-router-dom": "^6.21.1",
+    "react-scripts": "5.0.1",
+    "react-tag-input-component": "^2.0.2",
+    "react-toastify": "^9.1.3",
+    "rutlib": "^1.0.5",
+    "uuid": "^9.0.1",
+    "web-vitals": "^2.1.4",
+    "yup": "^1.3.3",
+    "zustand": "^4.5.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

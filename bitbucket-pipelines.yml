@@ -1,0 +1,98 @@
+image: node:20.11-buster-slim
+
+pipelines:
+  branches:
+    develop:
+      - step:
+          name: "Deployment to QA"
+          runs-on:
+            - self.hosted
+            - linux.shell
+          deployment: QA
+          script:
+            - export BITBUCKET_COMMIT_SHORT="${BITBUCKET_COMMIT::7}"
+            - export IMAGE_NAME_CONTAINER=$IMG_URL$IMAGE_NAME:$BITBUCKET_COMMIT_SHORT
+            # Configure .env
+            -  echo "REACT_APP_URL_LOGIN=$KUBE_REACT_APP_URL_LOGIN" >> .env
+            -  echo "REACT_APP_SERVER_PORT=$KUBE_REACT_APP_SERVER_PORT" >> .env
+            -  echo "REACT_APP_SERVER=$KUBE_REACT_APP_SERVER" >> .env
+            -  echo "AUTH_SERVER=$KUBE_AUTH_SERVER" >> .env
+            -  echo "AWS_SERVICES_URL=$KUBE_AWS_SERVICES_URL" >> .env
+            -  echo "AWS_ACCESS_KEY=$KUBE_AWS_ACCESS_KEY_ID" >> .env
+            -  echo "AWS_SECRET_KEY=$KUBE_AWS_ACCESS_SECRET" >> .env
+            -  echo "AWS_REGION=$KUBE_AWS_REGION" >> .env
+            -  echo "REACT_APP_BUCKET=$KUBE_REACT_APP_BUCKET" >> .env
+            -  echo "REACT_APP_BUCKET2=$KUBE_REACT_APP_BUCKET2" >> .env
+            -  echo "REACT_APP_FILENAME=$KUBE_REACT_APP_FILENAME" >> .env
+            -  echo "REACT_APP_FILENAME_ACCESS=$KUBE_REACT_APP_FILENAME_ACCESS" >> .env
+            -  echo "REACT_APP_BUCKET_LOG=$KUBE_REACT_APP_BUCKET_LOG" >> .env  
+            -  echo "REACT_APP_KBNET_CRONJOBNAME=$KUBE_REACT_APP_KBNET_CRONJOBNAME" >> .env  
+            -  echo "REACT_APP_SecretKey=$KUBE_REACT_APP_SECRET_KEY" >> .env 
+            -  echo "REACT_APP_KBNET_NAMESPACE=$KUBE_REACT_APP_KBNET_NAMESPACE" >> .env  
+            -  echo "REACT_APP_BLACKBOARD_URL=$KUBE_REACT_APP_BLACKBOARD_URL" >> .env
+            -  echo "REACT_APP_BLACKBOARD_BASIC_TOKEN=$KUBE_REACT_APP_BLACKBOARD_BASIC_TOKEN" >> .env
+            -  echo "REACT_APP_BLACKBOARD_CLIENT_ID=$REACT_APP_BLACKBOARD_CLIENT_ID" >> .env
+            -  echo "REACT_APP_BLACKBOARD_CLIENT_SECRET=$KUBE_REACT_APP_BLACKBOARD_CLIENT_SECRET" >> .env  
+            - docker version
+            - docker login $IMG_URL -u $AZR_USER -p $AZR_PASSWORD
+            - docker build -t $IMAGE_NAME_CONTAINER .
+            - docker push $IMAGE_NAME_CONTAINER
+      - step:
+          # trigger: manual
+          name: Deploy to Kubernetes
+          runs-on:
+            - self.hosted
+            - linux.shell
+          script:
+            - export BITBUCKET_COMMIT_SHORT="${BITBUCKET_COMMIT::7}"
+            # Configure kubectl
+            - kubectl --kubeconfig $K8SQA set image deployment/$KUBE_DEPLOY_QA $KUBE_CONTAINER_NAME_QA="$IMG_URL$IMAGE_NAME":"$BITBUCKET_COMMIT_SHORT" --namespace $KUBE_NAMESPACE_QA
+    master:
+      - step:
+          name: "Deployment to PROD"
+          runs-on:
+            - self.hosted
+            - linux.shell
+          deployment: PROD
+          script:
+            - export BITBUCKET_COMMIT_SHORT="${BITBUCKET_COMMIT::7}"
+            - export IMAGE_NAME_CONTAINER=$IMG_URL$IMAGE_NAME:$BITBUCKET_COMMIT_SHORT
+            # Configure .env
+            -  echo "REACT_APP_URL_LOGIN=$KUBE_REACT_APP_URL_LOGIN" >> .env
+            -  echo "REACT_APP_SERVER_PORT=$KUBE_REACT_APP_SERVER_PORT" >> .env
+            -  echo "REACT_APP_SERVER=$KUBE_REACT_APP_SERVER" >> .env
+            -  echo "AUTH_SERVER=$KUBE_AUTH_SERVER" >> .env
+            -  echo "AWS_SERVICES_URL=$KUBE_AWS_SERVICES_URL" >> .env
+            -  echo "AWS_ACCESS_KEY=$KUBE_AWS_ACCESS_KEY_ID" >> .env
+            -  echo "AWS_SECRET_KEY=$KUBE_AWS_ACCESS_SECRET" >> .env
+            -  echo "AWS_REGION=$KUBE_AWS_REGION" >> .env
+            -  echo "REACT_APP_BUCKET=$KUBE_REACT_APP_BUCKET" >> .env
+            -  echo "REACT_APP_BUCKET2=$KUBE_REACT_APP_BUCKET2" >> .env
+            -  echo "REACT_APP_FILENAME=$KUBE_REACT_APP_FILENAME" >> .env
+            -  echo "REACT_APP_FILENAME_ACCESS=$KUBE_REACT_APP_FILENAME_ACCESS" >> .env
+            -  echo "REACT_APP_BUCKET_LOG=$KUBE_REACT_APP_BUCKET_LOG" >> .env  
+            -  echo "REACT_APP_KBNET_CRONJOBNAME=$KUBE_REACT_APP_KBNET_CRONJOBNAME" >> .env  
+            -  echo "REACT_APP_SecretKey=$KUBE_REACT_APP_SECRET_KEY" >> .env 
+            -  echo "REACT_APP_KBNET_NAMESPACE=$KUBE_REACT_APP_KBNET_NAMESPACE" >> .env  
+            -  echo "REACT_APP_BLACKBOARD_URL=$KUBE_REACT_APP_BLACKBOARD_URL" >> .env
+            -  echo "REACT_APP_BLACKBOARD_BASIC_TOKEN=$KUBE_REACT_APP_BLACKBOARD_BASIC_TOKEN" >> .env
+            -  echo "REACT_APP_BLACKBOARD_CLIENT_ID=$REACT_APP_BLACKBOARD_CLIENT_ID" >> .env
+            -  echo "REACT_APP_BLACKBOARD_CLIENT_SECRET=$KUBE_REACT_APP_BLACKBOARD_CLIENT_SECRET" >> .env  
+            - docker version
+            - docker login $IMG_URL -u $AZR_USER -p $AZR_PASSWORD
+            - docker build -t $IMAGE_NAME_CONTAINER .
+            - docker push $IMAGE_NAME_CONTAINER
+      - step:
+          # trigger: manual
+          name: Deploy to Kubernetes
+          runs-on:
+            - self.hosted
+            - linux.shell
+          script:
+            - export BITBUCKET_COMMIT_SHORT="${BITBUCKET_COMMIT::7}"
+            # Configure kubectl
+            - kubectl --kubeconfig $K8SPROD set image deployment/$KUBE_DEPLOY_PROD $KUBE_CONTAINER_NAME_PROD="$IMG_URL$IMAGE_NAME":"$BITBUCKET_COMMIT_SHORT" --namespace $KUBE_NAMESPACE_PROD
+          
+
+
+
